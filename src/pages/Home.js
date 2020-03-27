@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useHistory } from "react-router-dom";
+import { useHistory } from "react-router";
 import axios from "axios";
 
 import turd from "../images/turd.jpg";
@@ -17,6 +17,10 @@ import FormControl from "@material-ui/core/FormControl";
 import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
+
+import Snackbar from "@material-ui/core/Snackbar";
+import IconButton from "@material-ui/core/IconButton";
+import CloseIcon from "@material-ui/icons/Close";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -47,7 +51,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function Home() {
+export default function Home(props) {
   const classes = useStyles();
   const history = useHistory();
 
@@ -59,7 +63,10 @@ export default function Home() {
     douche: false
   });
 
-  const SERVER = process.env.REACT_APP_SERVER;
+  const [open, setOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const SERVER = process.env.REACT_APP_SERVER || "http://localhost:5000";
 
   function handleChange(v) {
     switch (v) {
@@ -85,15 +92,14 @@ export default function Home() {
   function submitVote() {
     if (id === "" || secret === "") {
       console.log("please do not leave any empty fields");
+      setErrorMessage("please do not leave any empty fields");
+      setOpen(true);
     }
 
     if (state.turd || state.douche) {
-      console.log("sending vote to server", {
-        id: id,
-        secret: secret,
-        vote: state.turd === true ? "turd" : "douche"
-      });
-
+      console.log(id);
+      console.log(secret);
+      console.log(state.turd);
       axios
         .post(`${SERVER}/vote`, {
           id: id,
@@ -103,22 +109,65 @@ export default function Home() {
         .then(function(response) {
           // handle success
           console.log("yay vote sent", response);
-          history.push("/votes");
+          history.push({
+            pathname: "/votes",
+            state: {
+              hash: response.data.hash,
+              vote: response.data.vote,
+              prev_hash: response.data.prev_hash,
+              blockIndex: response.data.blockIndex
+            }
+          });
         })
         .catch(function(error) {
           // handle error
           console.log(error);
+          setErrorMessage(error.message);
+          setOpen(true);
         })
         .then(function() {
           // always executed
         });
     } else {
       console.log("please choose a candidate");
+      setErrorMessage("please choose a candidate");
+      setOpen(true);
     }
   }
 
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpen(false);
+    setErrorMessage("");
+  };
+
   return (
     <div className={classes.root}>
+      <Snackbar
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "left"
+        }}
+        open={open}
+        autoHideDuration={6000}
+        onClose={handleClose}
+        message={errorMessage}
+        action={
+          <React.Fragment>
+            <IconButton
+              size="small"
+              aria-label="close"
+              color="inherit"
+              onClick={handleClose}
+            >
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          </React.Fragment>
+        }
+      />
       <Typography
         style={{ marginTop: "5%" }}
         variant="h3"

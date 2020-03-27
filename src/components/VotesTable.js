@@ -21,7 +21,7 @@ const useStyles = makeStyles({
 export default function VotesTable() {
   const classes = useStyles();
 
-  const SERVER = process.env.REACT_APP_SERVER;
+  const SERVER = process.env.REACT_APP_SERVER || "http://localhost:5000";
 
   const [turdVotes, setTurdVotes] = useState(0);
   let [doucheVotes, setDoucheVotes] = useState(0);
@@ -35,8 +35,6 @@ export default function VotesTable() {
         //console.log(response);
 
         for (let i = 0; i < response.data.blockchain.length; i++) {
-          console.log(response.data.blockchain[i].vote);
-
           if (response.data.blockchain[i].vote === "douche") {
             setDoucheVotes(prev => prev + 1);
           }
@@ -51,11 +49,12 @@ export default function VotesTable() {
       })
       .catch(function(error) {
         // handle error
-        console.log(error);
+        console.log(error.message);
       })
       .then(function() {
         // always executed
       });
+    // eslint-disable-next-line
   }, []);
 
   return (
