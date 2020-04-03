@@ -25,8 +25,7 @@ import CloseIcon from "@material-ui/icons/Close";
 const useStyles = makeStyles(theme => ({
   root: {
     width: "100%",
-    textAlign: "center",
-    margin: theme.spacing(1)
+    textAlign: "center"
   },
   input: {
     marginTop: theme.spacing(2),
@@ -97,9 +96,9 @@ export default function Home(props) {
     }
 
     if (state.turd || state.douche) {
-      console.log(id);
-      console.log(secret);
-      console.log(state.turd);
+      console.log("id", id);
+      console.log("secret", secret);
+      console.log("vote", state.turd);
       axios
         .post(`${SERVER}/vote`, {
           id: id,
@@ -168,24 +167,25 @@ export default function Home(props) {
           </React.Fragment>
         }
       />
+
       <Typography
         style={{ marginTop: "5%" }}
         variant="h3"
-        component="h2"
+        component="h3"
         gutterBottom
       >
         Vote Blockchain
       </Typography>
       <CssBaseline />
       <Container maxWidth="sm">
-        <Typography variant="body1" gutterBottom>
+        <Typography variant="body2" gutterBottom>
           Vote for your president without fear of retaliation incase they lose.
           Everyone will be aware that you voted from your id, but they won't be
           able to fiqure out who you voted for. Your vote will be added on a
           blockchain and hashed.
         </Typography>
       </Container>
-
+      <br />
       <div style={{ display: "inlineBlock" }}>
         <img src={douche} alt="douche" className={classes.image} />
         <img src={turd} alt="turd" className={classes.image} />
@@ -253,9 +253,3 @@ export default function Home(props) {
     </div>
   );
 }
-
-/*
-
-
-
-*/
